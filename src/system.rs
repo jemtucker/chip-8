@@ -20,4 +20,8 @@ impl System {
     pub fn get_mem(&self, i: usize) -> u8 {
         self.memory[i]
     }
+
+    pub fn key_pressed(&self, key: u8) -> bool {
+        self.keys[key as usize]
+    }
 }

@@ -17,7 +17,7 @@ pub struct Cpu {
     stack: Vec<usize>,
     sys: System,
 
-    idx: usize,
+    idx: u16,
     pc: usize,
 }
 
@@ -173,12 +173,23 @@ impl Cpu {
                 self.set_r(REG_VF, vf);
                 self.set_r(rx, res);
             },
-            Opcode::LDI(addr) => self.idx = addr as usize,
+            Opcode::LDI(addr) => self.idx = addr as u16,
             Opcode::RND(rx, byte) => self.set_r(rx, rand::random::<u8>() & byte),
-            Opcode::DRW(rx, ry, nibble) => unimplemented!(),
-            Opcode::SKP(rx) => unimplemented!(),
-            Opcode::SKNP(rx) => unimplemented!(),
-            Opcode::ADDI(_) => unimplemented!(),
+            Opcode::DRW(rx, ry, nibble) => unimplemented!(), // TODO draw a sprite
+            Opcode::SKP(rx) => {
+                if self.sys.key_pressed(rx) {
+                    self.pc += 2;
+                }
+            },
+            Opcode::SKNP(rx) => {
+                if !self.sys.key_pressed(rx) {
+                    self.pc += 2;
+                }
+            },
+            Opcode::ADDI(rx) => {
+                let res = self.get_r(rx) as u16 + self.idx;
+                self.idx = res;
+            },
         }
     }
 
